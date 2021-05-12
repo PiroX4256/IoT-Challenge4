@@ -6,10 +6,10 @@
  *  @author Luca Pietro Borsani
  */
 
-#include "sendAck.h"
+#include "Challenge4.h"
 #include "Timer.h"
 
-module sendAckC {
+module Challenge4C {
 
   uses {
   /****** INTERFACES *****/

@@ -5,15 +5,15 @@
  *  @author Luca Pietro Borsani
  */
 
-#include "sendAck.h"
+#include "Challenge4.h"
 
-configuration sendAckAppC {}
+configuration Challenge4AppC {}
 
 implementation {
 
 
 /****** COMPONENTS *****/
-  components MainC, sendAckC as App;
+  components MainC, Challenge4C as App;
   //add the other components here
 
 /****** INTERFACES *****/

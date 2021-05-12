@@ -1,5 +1,5 @@
-#ifndef SENDACK_H
-#define SENDACK_H
+#ifndef CHALLENGE4_H
+#define CHALLENGE4_H
 
 //payload of the msg
 typedef nx_struct my_msg {
