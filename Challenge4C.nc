@@ -21,6 +21,7 @@ module Challenge4C {
     interface SplitControl;
     interface PacketAcknowledgements;
     interface AMPacket;
+    interface Ack;
 
     //interfaces for communication
 	//interface for timer
