@@ -131,7 +131,7 @@ module Challenge4C {
 
   //************************* Read interface **********************//
   event void Read.readDone(error_t result, uint16_t data) {
-	/* This event is triggered when the fake sensor finish to read (after a Read.read()) */
+	/* This event is triggered when the fake sensor finishes to read (after a Read.read()) */
     if(!locked && result == SUCCESS) {
 
         my_msg_t* message = (my_msg_t*)call Packet.getPayload(&packet, sizeof(my_msg_t));

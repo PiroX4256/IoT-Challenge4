@@ -61,6 +61,7 @@ print ">>>Will boot at time",  time1/t.ticksPerSecond(), "[sec]";
 
 print "Creating node 2...";
 node2 = t.getNode(2);
+# Node 2 is spawned at 5 seconds timestamp
 time2 = 5*t.ticksPerSecond();
 node2.bootAtTime(time2);
 print ">>>Will boot at time", time2/t.ticksPerSecond(), "[sec]";
