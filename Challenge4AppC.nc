@@ -18,8 +18,8 @@ implementation {
     components new AMReceiverC(AM_RADIO_COUNT_MSG);
     components new TimerMilliC();
     components ActiveMessageC;
-    components PrintfC;
     components SerialStartC;
+    components FakeSensorC;
     //add the other components here
 
     /****** INTERFACES *****/
@@ -36,7 +36,6 @@ implementation {
     App.Receive -> AMReceiverC;
     App.AMSend -> AMSenderC;
     App.AMControl -> ActiveMessageC;
-    App.Leds -> LedsC;
     App.MilliTimer -> TimerMilliC;
     App.Packet -> AMSenderC;
 }
