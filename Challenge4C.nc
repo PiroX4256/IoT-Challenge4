@@ -106,7 +106,7 @@ module Challenge4C {
         message->msg_counter = counter;
         message->value = 0;
         if(call Ack.requestAck(&packet)==SUCCESS) {
-            dbg("ack", "Acks enabled");
+            dbg("radio_ack", "Acks enabled");
         }
 
         if(call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(my_msg_t)) == SUCCESS) {
@@ -134,17 +134,17 @@ module Challenge4C {
         locked = FALSE;
         if(call Ack.wasAcked(buf) && TOS_NODE_ID==1) {
             call MilliTimer.stop();
-            dbg("ack", "\nAcked");
+            dbg("radio_ack", "\nAcked");
         }
         else if(call Ack.wasAcked(buf) && TOS_NODE_ID==2) {
-            dbg("ack", "OK");
+            dbg("radio_ack", "OK");
             call SplitControl.stop();
         }
         else {
             if(call AMSend.send(AM_BROADCAST_ADDR, buf, sizeof(my_msg_t)) == SUCCESS) {
                 locked = TRUE;
             }
-            dbg("ack", "\nNot Acked");
+            dbg("radio_ack", "\nNot Acked");
         }
     }
   }
@@ -193,7 +193,7 @@ module Challenge4C {
         message->msg_counter = counter;
         message->value = data;
         if(call Ack.requestAck(&packet)==SUCCESS) {
-            dbg("ack", "Acks enabled");
+            dbg("radio_ack", "Acks enabled");
         }
         if(call AMSend.send(sender_addr, &packet, sizeof(my_msg_t)) == SUCCESS) {
             locked = TRUE;
