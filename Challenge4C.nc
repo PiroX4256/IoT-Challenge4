@@ -104,7 +104,7 @@ module Challenge4C {
         }
         message->msg_type = REQ;
         message->msg_counter = counter;
-        message->value = NULL;
+        message->value = 0;
         if(call Ack.requestAck(&packet)==SUCCESS) {
             dbg("ack", "Acks enabled");
         }
@@ -163,7 +163,7 @@ module Challenge4C {
     if(len != sizeof(message_received)) return buf;
 
     if(TOS_NODE_ID==2) {
-        counter = buf->counter;
+        counter = message_received->counter;
         sender_addr = call AMPacket.source(buf);
         call Read.read();
     }
@@ -180,8 +180,8 @@ module Challenge4C {
 	 * X. Use debug statement showing what's happening (i.e. message fields)
 	 */
     if(!locked && result == SUCCESS) {
-        nx_uint16_t value = (nx_uint16_t) data;
-        dbg("response", "\nFake sensor: %u", value);
+        //nx_uint16_t value = data;
+        dbg("response", "\nFake sensor: %u", data);
 
         my_msg_t* message = (my_msg_t*)call Packet.getPayload(&packet, sizeof(my_msg_t));
         if (message == NULL) {
@@ -190,7 +190,7 @@ module Challenge4C {
 
         message->msg_type = RESP;
         message->msg_counter = counter;
-        message->value = value;
+        message->value = data;
         if(call Ack.requestAck(&packet)==SUCCESS) {
             dbg("ack", "Acks enabled");
         }
