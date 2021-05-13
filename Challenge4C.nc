@@ -181,7 +181,7 @@ module Challenge4C {
 	 */
     if(!locked && result == SUCCESS) {
         //nx_uint16_t value = data;
-        dbg("response", "\nFake sensor: %u", data);
+        //dbg("response", "\nFake sensor: %u", data);
 
         my_msg_t* message = (my_msg_t*)call Packet.getPayload(&packet, sizeof(my_msg_t));
 
