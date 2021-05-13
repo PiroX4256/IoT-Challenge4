@@ -163,7 +163,7 @@ module Challenge4C {
     if(len != sizeof(message_received)) return buf;
 
     if(TOS_NODE_ID==2) {
-        counter = message_received->counter;
+        counter = message_received->msg_counter;
         sender_addr = call AMPacket.source(buf);
         call Read.read();
     }
@@ -184,6 +184,7 @@ module Challenge4C {
         dbg("response", "\nFake sensor: %u", data);
 
         my_msg_t* message = (my_msg_t*)call Packet.getPayload(&packet, sizeof(my_msg_t));
+
         if (message == NULL) {
             return;
         }
