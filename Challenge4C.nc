@@ -86,7 +86,7 @@ module Challenge4C {
 
   event void SplitControl.stopDone(error_t err){
     /* Fill it ... */
-    dbg("split-control", "\nApplication stopped");
+    dbg("split-control", "Application stopped\n");
   }
 
   //***************** MilliTimer interface ********************//
@@ -109,7 +109,7 @@ module Challenge4C {
         counter++;
 
         if(call Ack.requestAck(&packet)==SUCCESS) {
-            dbg("radio_ack", "Acks enabled");
+            dbg("radio_ack", "Acks enabled\n");
         }
 
         if(call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(my_msg_t)) == SUCCESS) {
@@ -132,18 +132,18 @@ module Challenge4C {
 	 */
     if(&packet == buf) {
         my_msg_t* sent_msg = (my_msg_t*)buf;
-        dbg("radio_send", "\nType: %hu, \nCounter: %hu, \nValue: %hu", sent_msg->msg_type, sent_msg->msg_counter, sent_msg->value);
+        dbg("radio_send", "\nType: %hu, \nCounter: %hu, \nValue: %hu\n", sent_msg->msg_type, sent_msg->msg_counter, sent_msg->value);
         locked = FALSE;
         if(call Ack.wasAcked(buf) && TOS_NODE_ID==1) {
             call MilliTimer.stop();
-            dbg("radio_ack", "\nAcked");
+            dbg("radio_ack", "Acked\n");
         }
         else if(call Ack.wasAcked(buf) && TOS_NODE_ID==2) {
-            dbg("radio_ack", "OK");
+            dbg("radio_ack", "OK\n");
             call SplitControl.stop();
         }
         else {
-            dbg("radio_ack", "\nNot Acked");
+            dbg("radio_ack", "Not Acked\n");
         }
     }
   }
@@ -192,7 +192,7 @@ module Challenge4C {
         message->msg_counter = counter;
         message->value = data;
         if(call Ack.requestAck(&packet)==SUCCESS) {
-            dbg("radio_ack", "Acks enabled");
+            dbg("radio_ack", "Acks enabled\n");
         }
         if(call AMSend.send(sender_addr, &packet, sizeof(my_msg_t)) == SUCCESS) {
             locked = TRUE;
