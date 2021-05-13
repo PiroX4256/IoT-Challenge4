@@ -1,8 +1,6 @@
 /**
- *  Configuration file for wiring of sendAckC module to other common 
- *  components needed for proper functioning
- *
- *  @author Luca Pietro Borsani
+ *	Challenge 4 Components, interfaces and wiring file.
+ *  @author Luca Pirovano, Luca Vecchio
  */
 
 #include "Challenge4.h"
@@ -20,18 +18,12 @@ implementation {
     components ActiveMessageC;
     components SerialStartC;
     components new FakeSensorC();
-    //add the other components here
 
     /****** INTERFACES *****/
     //Boot interface
     App.Boot -> MainC.Boot;
 
     /****** Wire the other interfaces down here *****/
-    //Send and Receive interfaces
-    //Radio Control
-    //Interfaces to access package fields
-    //Timer interface
-    //Fake Sensor read
     App.Read -> FakeSensorC;
     App.Receive -> AMReceiverC;
     App.AMSend -> AMSenderC;
