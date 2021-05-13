@@ -19,9 +19,8 @@ module Challenge4C {
     interface Timer<TMilli> as MilliTimer;
     interface Packet;
     interface SplitControl;
-    interface PacketAcknowledgements;
+    interface PacketAcknowledgements as Ack;
     interface AMPacket;
-    interface Ack;
 
     //interfaces for communication
 	//interface for timer

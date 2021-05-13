@@ -38,6 +38,5 @@ implementation {
     App.SplitControl -> ActiveMessageC;
     App.MilliTimer -> TimerMilliC;
     App.Packet -> AMSenderC;
-    App.Ack -> PacketAcknowledgments;
 }
 
