@@ -68,6 +68,7 @@ module Challenge4C {
   //***************** Boot interface ********************//
   event void Boot.booted() {
 	dbg("boot","Application booted.\n");
+	call SplitControl.start();
 	/* Fill it ... */
   }
 
