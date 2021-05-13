@@ -161,6 +161,8 @@ module Challenge4C {
     my_msg_t* message_received = (my_msg_t*)payload;
     if(len != sizeof(message_received)) return buf;
 
+    dbg("radio_rec", "Received message\n");
+
     if(TOS_NODE_ID==2) {
         counter = message_received->msg_counter;
         sender_addr = call AMPacket.source(buf);
