@@ -4,3 +4,4 @@
 simbuild/
 *.so
 TOSSIM.py
+*.DS_Store
