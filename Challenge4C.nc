@@ -13,7 +13,12 @@ module Challenge4C {
 
   uses {
   /****** INTERFACES *****/
-	interface Boot; 
+	interface Boot;
+    interface Receive;
+    interface AMSend;
+    interface Timer<TMilli> as MilliTimer;
+    interface Packet;
+    interface SplitControl;
 	
     //interfaces for communication
 	//interface for timer
@@ -64,7 +69,13 @@ module Challenge4C {
 
   //***************** SplitControl interface ********************//
   event void SplitControl.startDone(error_t err){
-    /* Fill it ... */
+    if(err == SUCCESS) {
+        uint16_t timer_period;
+        call MilliTimer.startPeriodic(timer_period);
+    }
+    else {
+        call AMControl.start();
+    }
   }
   
   event void SplitControl.stopDone(error_t err){

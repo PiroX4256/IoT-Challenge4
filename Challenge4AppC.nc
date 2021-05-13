@@ -14,19 +14,30 @@ implementation {
 
 /****** COMPONENTS *****/
   components MainC, Challenge4C as App;
-  //add the other components here
+    components new AMSenderC(AM_RADIO_COUNT_MSG);
+    components new AMReceiverC(AM_RADIO_COUNT_MSG);
+    components new TimerMilliC();
+    components ActiveMessageC;
+    components PrintfC;
+    components SerialStartC;
+    //add the other components here
 
-/****** INTERFACES *****/
-  //Boot interface
-  App.Boot -> MainC.Boot;
+    /****** INTERFACES *****/
+    //Boot interface
+    App.Boot -> MainC.Boot;
 
-  /****** Wire the other interfaces down here *****/
-  //Send and Receive interfaces
-  //Radio Control
-  //Interfaces to access package fields
-  //Timer interface
-  //Fake Sensor read
-  App.Read -> FakeSensorC;
-
+    /****** Wire the other interfaces down here *****/
+    //Send and Receive interfaces
+    //Radio Control
+    //Interfaces to access package fields
+    //Timer interface
+    //Fake Sensor read
+    App.Read -> FakeSensorC;
+    App.Receive -> AMReceiverC;
+    App.AMSend -> AMSenderC;
+    App.AMControl -> ActiveMessageC;
+    App.Leds -> LedsC;
+    App.MilliTimer -> TimerMilliC;
+    App.Packet -> AMSenderC;
 }
 

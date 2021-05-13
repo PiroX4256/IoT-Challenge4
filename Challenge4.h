@@ -3,9 +3,8 @@
 
 //payload of the msg
 typedef nx_struct my_msg {
-	//field 1
-	//field 2
-	//field 3
+    bool req;
+	uint16_t value;
 } my_msg_t;
 
 #define REQ 1
