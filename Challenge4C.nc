@@ -106,6 +106,8 @@ module Challenge4C {
         message->msg_type = REQ;
         message->msg_counter = counter;
         message->value = 0;
+        counter++;
+
         if(call Ack.requestAck(&packet)==SUCCESS) {
             dbg("radio_ack", "Acks enabled");
         }
@@ -113,7 +115,6 @@ module Challenge4C {
         if(call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(my_msg_t)) == SUCCESS) {
             locked = TRUE;
         }
-        counter++;
     }
   }
 
@@ -131,7 +132,7 @@ module Challenge4C {
 	 */
     if(&packet == buf) {
         my_msg_t* sent_msg = (my_msg_t*)buf;
-        dbg("radio_send", "\nType: %u, \nCounter: %u, \nValue: %u", sent_msg->msg_type, sent_msg->msg_counter, sent_msg->value);
+        dbg("radio_send", "\nType: %hu, \nCounter: %hu, \nValue: %hu", sent_msg->msg_type, sent_msg->msg_counter, sent_msg->value);
         locked = FALSE;
         if(call Ack.wasAcked(buf) && TOS_NODE_ID==1) {
             call MilliTimer.stop();
@@ -142,9 +143,6 @@ module Challenge4C {
             call SplitControl.stop();
         }
         else {
-            if(call AMSend.send(AM_BROADCAST_ADDR, buf, sizeof(my_msg_t)) == SUCCESS) {
-                locked = TRUE;
-            }
             dbg("radio_ack", "\nNot Acked");
         }
     }
@@ -182,7 +180,7 @@ module Challenge4C {
 	 */
     if(!locked && result == SUCCESS) {
         //nx_uint16_t value = data;
-        dbg("response", "\nFake sensor: %u", data);
+        dbg("response", "\nFake sensor: %hu", data);
 
         my_msg_t* message = (my_msg_t*)call Packet.getPayload(&packet, sizeof(my_msg_t));
 
