@@ -105,7 +105,7 @@ module Challenge4C {
         message->msg_type = REQ;
         message->msg_counter = counter;
         message->value = NULL;
-        if(requestAck(&packet)==SUCCESS) {
+        if(call Ack.requestAck(&packet)==SUCCESS) {
             dbg("ack", "Acks enabled");
         }
 
@@ -129,15 +129,16 @@ module Challenge4C {
 	 * X. Use debug statements showing what's happening (i.e. message fields)
 	 */
     if(&packet == buf) {
-        dbg("radio_send", "\nType: %u, \nCounter: %u, \nValue: %u", buf->msg_type, buf->msg_counter, buf->value);
+        my_msg_t* sent_msg = (my_msg_t*)buf;
+        dbg("radio_send", "\nType: %u, \nCounter: %u, \nValue: %u", sent_msg->msg_type, sent_msg->msg_counter, sent_msg->value);
         locked = FALSE;
-        if(wasAcked(buf) && TOS_MOTE_ID==1) {
-            call MilliTimer.stopPeriodic();
+        if(call Ack.wasAcked(buf) && TOS_NODE_ID==1) {
+            call MilliTimer.stop();
             dbg("ack", "\nAcked");
         }
-        else if(wasAcked(buf) && TOS_MODE_ID==2) {
+        else if(call Ack.wasAcked(buf) && TOS_NODE_ID==2) {
             dbg("ack", "OK");
-            SplitControl.stop();
+            call SplitControl.stop();
         }
         else {
             if(call AMSend.send(AM_BROADCAST_ADDR, buf, sizeof(my_msg_t)) == SUCCESS) {
@@ -159,9 +160,9 @@ module Challenge4C {
 	 * X. Use debug statements showing what's happening (i.e. message fields)
 	 */
     my_msg_t* message_received = (my_msg_t*)payload;
-    if(len != sizeof(my_msg)) return buf;
+    if(len != sizeof(message_received)) return buf;
 
-    if(TOS_MOTE_ID==2) {
+    if(TOS_NODE_ID==2) {
         counter = buf->counter;
         sender_addr = call AMPacket.source(buf);
         call Read.read();
@@ -190,8 +191,9 @@ module Challenge4C {
         message->msg_type = RESP;
         message->msg_counter = counter;
         message->value = value;
-        requestAck(&packet);
-
+        if(call Ack.requestAck(&packet)==SUCCESS) {
+            dbg("ack", "Acks enabled");
+        }
         if(call AMSend.send(sender_addr, &packet, sizeof(my_msg_t)) == SUCCESS) {
             locked = TRUE;
         }
