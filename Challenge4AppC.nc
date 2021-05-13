@@ -19,7 +19,7 @@ implementation {
     components new TimerMilliC();
     components ActiveMessageC;
     components SerialStartC;
-    components FakeSensorC;
+    components new FakeSensorC();
     //add the other components here
 
     /****** INTERFACES *****/
@@ -35,7 +35,7 @@ implementation {
     App.Read -> FakeSensorC;
     App.Receive -> AMReceiverC;
     App.AMSend -> AMSenderC;
-    App.AMControl -> ActiveMessageC;
+    App.SplitControl -> ActiveMessageC;
     App.MilliTimer -> TimerMilliC;
     App.Packet -> AMSenderC;
 }

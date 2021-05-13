@@ -19,11 +19,13 @@ module Challenge4C {
     interface Timer<TMilli> as MilliTimer;
     interface Packet;
     interface SplitControl;
-	
+    interface PacketAcknowledgements;
+    interface AMPacket;
+
     //interfaces for communication
 	//interface for timer
     //other interfaces, if needed
-	
+
 	//interface used to perform sensor reading (to get the value from a sensor)
 	interface Read<uint16_t>;
   }
@@ -33,11 +35,13 @@ module Challenge4C {
   uint8_t counter=0;
   uint8_t rec_id;
   message_t packet;
+  am_addr_t sender_addr;
+  bool locked;
 
   void sendReq();
   void sendResp();
-  
-  
+
+
   //***************** Send request function ********************//
   void sendReq() {
 	/* This function is called when we want to send a request
@@ -49,12 +53,12 @@ module Challenge4C {
 	 * 3. Send an UNICAST message to the correct node
 	 * X. Use debug statements showing what's happening (i.e. message fields)
 	 */
- }        
+ }
 
   //****************** Task send response *****************//
   void sendResp() {
   	/* This function is called when we receive the REQ message.
-  	 * Nothing to do here. 
+  	 * Nothing to do here.
   	 * `call Read.read()` reads from the fake sensor.
   	 * When the reading is done it raise the event read one.
   	 */
@@ -70,16 +74,18 @@ module Challenge4C {
   //***************** SplitControl interface ********************//
   event void SplitControl.startDone(error_t err){
     if(err == SUCCESS) {
-        uint16_t timer_period;
-        call MilliTimer.startPeriodic(timer_period);
+        if(TOS_NODE_ID==1) {
+            call MilliTimer.startPeriodic(1000);
+        }
     }
     else {
-        call AMControl.start();
+        call SplitControl.start();
     }
   }
-  
+
   event void SplitControl.stopDone(error_t err){
     /* Fill it ... */
+    dbg("split-control", "\nApplication stopped");
   }
 
   //***************** MilliTimer interface ********************//
@@ -88,12 +94,32 @@ module Challenge4C {
 	 * When the timer fires, we send a request
 	 * Fill this part...
 	 */
+    if(locked) {
+        return;
+    }
+    else {
+        my_msg_t* message = (my_msg_t*)call Packet.getPayload(&packet, sizeof(my_msg_t));
+        if (message == NULL) {
+            return;
+        }
+        message->msg_type = REQ;
+        message->msg_counter = counter;
+        message->value = NULL;
+        if(requestAck(&packet)==SUCCESS) {
+            dbg("ack", "Acks enabled");
+        }
+
+        if(call AMSend.send(AM_BROADCAST_ADDR, &packet, sizeof(my_msg_t)) == SUCCESS) {
+            locked = TRUE;
+        }
+        counter++;
+    }
   }
-  
+
 
   //********************* AMSend interface ****************//
   event void AMSend.sendDone(message_t* buf,error_t err) {
-	/* This event is triggered when a message is sent 
+	/* This event is triggered when a message is sent
 	 *
 	 * STEPS:
 	 * 1. Check if the packet is sent
@@ -102,11 +128,29 @@ module Challenge4C {
 	 * 2b. Otherwise, send again the request
 	 * X. Use debug statements showing what's happening (i.e. message fields)
 	 */
+    if(&packet == buf) {
+        dbg("radio_send", "\nType: %u, \nCounter: %u, \nValue: %u", buf->msg_type, buf->msg_counter, buf->value);
+        locked = FALSE;
+        if(wasAcked(buf) && TOS_MOTE_ID==1) {
+            call MilliTimer.stopPeriodic();
+            dbg("ack", "\nAcked");
+        }
+        else if(wasAcked(buf) && TOS_MODE_ID==2) {
+            dbg("ack", "OK");
+            SplitControl.stop();
+        }
+        else {
+            if(call AMSend.send(AM_BROADCAST_ADDR, buf, sizeof(my_msg_t)) == SUCCESS) {
+                locked = TRUE;
+            }
+            dbg("ack", "\nNot Acked");
+        }
+    }
   }
 
   //***************************** Receive interface *****************//
   event message_t* Receive.receive(message_t* buf,void* payload, uint8_t len) {
-	/* This event is triggered when a message is received 
+	/* This event is triggered when a message is received
 	 *
 	 * STEPS:
 	 * 1. Read the content of the message
@@ -114,18 +158,46 @@ module Challenge4C {
 	 * 3. If a request is received, send the response
 	 * X. Use debug statements showing what's happening (i.e. message fields)
 	 */
+    my_msg_t* message_received = (my_msg_t*)payload;
+    if(len != sizeof(my_msg)) return buf;
 
-  }
-  
+    if(TOS_MOTE_ID==2) {
+        counter = buf->counter;
+        sender_addr = call AMPacket.source(buf);
+        call Read.read();
+    }
+
+}
+
   //************************* Read interface **********************//
   event void Read.readDone(error_t result, uint16_t data) {
-	/* This event is triggered when the fake sensor finish to read (after a Read.read()) 
+	/* This event is triggered when the fake sensor finish to read (after a Read.read())
 	 *
 	 * STEPS:
 	 * 1. Prepare the response (RESP)
 	 * 2. Send back (with a unicast message) the response
 	 * X. Use debug statement showing what's happening (i.e. message fields)
 	 */
+    if(!locked && result == SUCCESS) {
+        nx_uint16_t value = (nx_uint16_t) data;
+        dbg("response", "\nFake sensor: %u", value);
+
+        my_msg_t* message = (my_msg_t*)call Packet.getPayload(&packet, sizeof(my_msg_t));
+        if (message == NULL) {
+            return;
+        }
+
+        message->msg_type = RESP;
+        message->msg_counter = counter;
+        message->value = value;
+        requestAck(&packet);
+
+        if(call AMSend.send(sender_addr, &packet, sizeof(my_msg_t)) == SUCCESS) {
+            locked = TRUE;
+        }
+
+    }
 
 }
 
+}
