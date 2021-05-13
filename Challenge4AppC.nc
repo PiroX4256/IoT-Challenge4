@@ -39,5 +39,6 @@ implementation {
     App.MilliTimer -> TimerMilliC;
     App.Packet -> AMSenderC;
     App.AMPacket -> AMSenderC;
+    App.Ack -> ActiveMessageC;
 }
 
